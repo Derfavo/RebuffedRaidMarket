@@ -3,13 +3,13 @@
 ## Notes-deDE: Kanalübersicht für Raidgruppen, Kaufgesuche und Verkaufsangebote.
 ## Notes: Configurable raid recruitment and trade channel browser.
 ## Author: Custom
-## Version: 1.2.1
-## SavedVariables: RebuffedRaidMarketDB
+## X-Release-Date: 20261101
+## Version: 1.2.2
+## SavedVariables: RebuffedRaidMarketDB, RebuffedRaidMarketVersionDB
 ## SavedVariablesPerCharacter: RebuffedRaidMarketPostDB
 ## OptionalDeps: RebuffedItemLevel
 
 Classifier.lua
 RebuffedRaidMarket.lua
 Poster.lua
-VersionStatus.lua
 VersionCheck.lua
