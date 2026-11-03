@@ -1,8 +1,14 @@
 # RebuffedRaidMarket
 
-RebuffedRaidMarket collects raid recruitment and trade messages from a chat source you choose. The window groups raid ads by raid name and trade ads into buying and selling sections. Clicking an ad opens a whisper draft addressed to its author.
+RebuffedRaidMarket collects raid recruitment and trade messages from a chat source you choose. The window groups raid ads by raid name and trade ads into buying and selling sections. Clicking a raid ad immediately whispers your active specialization and cached GearScore to its author, for example `Resto Shaman - 3.8k gs`. Clicking a buying or selling ad opens a whisper draft instead. Item tooltips remain available on hover.
 
 The current window labels are German: **Kaufen** means buying, **Verkaufen** means selling, and **Eigene Anzeige** opens your own ad.
+
+## Replying to raid ads
+
+The specialization comes from the active talent tree with the most points and uses English class and specialization names. GearScore comes from RebuffedItemLevel and is rounded to one decimal place in thousands. Your saved posting draft does not affect this reply.
+
+If your specialization is ambiguous or GearScore is unavailable, nothing is sent and the chat explains what is missing. Repeated clicks on the same author within two seconds are ignored to avoid duplicate whispers.
 
 ## Choosing a chat source
 

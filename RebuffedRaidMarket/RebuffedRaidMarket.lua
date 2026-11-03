@@ -63,8 +63,22 @@ local function SetSource(value)
     return true
 end
 
-local function Whisper(author)
-    if author and author ~= "" then ChatFrame_SendTell(author) end
+local function IsRaidEntry(entry)
+    if not entry or type(entry.groups) ~= "table" then return false end
+    for _, group in ipairs(entry.groups) do
+        if group ~= "Kaufen" and group ~= "Verkaufen" then return true end
+    end
+    return false
+end
+function M.Contact(entry)
+    if not entry or not entry.author or entry.author == "" then return end
+    if IsRaidEntry(entry) then
+        if not M.Poster or not M.Poster.Reply then Print("Raid-Antwort noch nicht bereit."); return end
+        local sent, problem = M.Poster.Reply(entry.author)
+        if not sent and problem then Print(problem) end
+    else
+        ChatFrame_SendTell(entry.author)
+    end
 end
 
 local function Render()
@@ -193,13 +207,13 @@ local function MakeWindow()
         row.preview:SetScrollChild(row.message)
         row.age = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         row.age:SetPoint("RIGHT", -4, 0)
-        row:SetScript("OnClick", function(self) if self.entry then Whisper(self.entry.author) end end)
+        row:SetScript("OnClick", function(self) if self.entry then M.Contact(self.entry) end end)
         row:SetScript("OnEnter", function(self)
             if not self.entry then return end
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetText(self.entry.author, 1, 0.82, 0)
             GameTooltip:AddLine(M.Display(self.entry.message), 1, 1, 1, true)
-            GameTooltip:AddLine("Klicken: Flüsternachricht öffnen", 0.3, 1, 0.3)
+            GameTooltip:AddLine(IsRaidEntry(self.entry) and "Klicken: Skillung + GearScore direkt flüstern" or "Klicken: Flüsternachricht öffnen", 0.3, 1, 0.3)
             GameTooltip:Show()
         end)
         row:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -216,11 +230,11 @@ local function MakeWindow()
             row.hoveredItem = nil
             GameTooltip:Hide()
         end)
-        row.message:SetScript("OnHyperlinkClick", function()
-            if row.entry then Whisper(row.entry.author) end
+        row.message:SetScript("OnHyperlinkClick", function(self, data, text, button)
+            if row.entry and (not button or button == "LeftButton") then M.Contact(row.entry) end
         end)
         row.message:SetScript("OnMouseUp", function(self, button)
-            if button == "LeftButton" and row.entry and not row.hoveredItem then Whisper(row.entry.author) end
+            if button == "LeftButton" and row.entry and not row.hoveredItem then M.Contact(row.entry) end
         end)
         row.message:EnableMouseWheel(true); row.message:SetScript("OnMouseWheel", Wheel)
         row:EnableMouseWheel(true); row:SetScript("OnMouseWheel", Wheel)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+- Clicking a raid ad now whispers your active specialization and GearScore in English.
+- Detect all 30 talent specializations and reuse the cached GearScore.
+- Keep trade ads as whisper drafts and guard against duplicate click callbacks.
+
 ## 1.2.3
 
 - Prevent guild version messages when the character has no confirmed guild membership.

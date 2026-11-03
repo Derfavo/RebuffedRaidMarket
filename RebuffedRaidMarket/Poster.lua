@@ -186,6 +186,48 @@ function P.GearScore()
     return string.format("%.1fk", math.floor(score / 100 + 0.5) / 10)
 end
 
+local replySpecs = {
+    WARRIOR = {"Arms Warrior", "Fury Warrior", "Protection Warrior"},
+    PALADIN = {"Holy Paladin", "Protection Paladin", "Retribution Paladin"},
+    HUNTER = {"Beast Mastery Hunter", "Marksmanship Hunter", "Survival Hunter"},
+    ROGUE = {"Assassination Rogue", "Combat Rogue", "Subtlety Rogue"},
+    PRIEST = {"Discipline Priest", "Holy Priest", "Shadow Priest"},
+    DEATHKNIGHT = {"Blood Death Knight", "Frost Death Knight", "Unholy Death Knight"},
+    SHAMAN = {"Elemental Shaman", "Enhancement Shaman", "Resto Shaman"},
+    MAGE = {"Arcane Mage", "Fire Mage", "Frost Mage"},
+    WARLOCK = {"Affliction Warlock", "Demonology Warlock", "Destruction Warlock"},
+    DRUID = {"Balance Druid", "Feral Druid", "Resto Druid"},
+}
+function P.BuildReply()
+    local _, class = UnitClass("player")
+    local specs = replySpecs[class]
+    if not specs or not GetTalentTabInfo then return nil, "Skillung noch nicht verfügbar." end
+    local best, most, tied = nil, 0, false
+    for tree = 1, 3 do
+        local _, _, points = GetTalentTabInfo(tree)
+        points = tonumber(points) or 0
+        if points > most then best, most, tied = tree, points, false
+        elseif points == most and points > 0 then tied = true end
+    end
+    if not best or tied then return nil, "Skillung nicht eindeutig. Bitte die aktiven Talentpunkte prüfen." end
+    local score = P.GearScore()
+    if not score then return nil, "GearScore noch nicht verfügbar. Rebuffed ItemLevel aktivieren und kurz warten." end
+    return specs[best] .. " - " .. score .. " gs"
+end
+local replyAuthor, replyTime = nil, -100000
+function P.Reply(author)
+    if type(author) ~= "string" or author == "" then return false end
+    local now = GetTime()
+    -- A SimpleHTML click can fire both hyperlink and mouse-up callbacks.
+    if author == replyAuthor and now - replyTime < 2 then return false end
+    local message, problem = P.BuildReply()
+    if not message then return false, problem end
+    local ok = pcall(SendChatMessage, message, "WHISPER", nil, author)
+    if not ok then return false, "Flüsternachricht konnte nicht gesendet werden." end
+    replyAuthor, replyTime = author, now
+    return true
+end
+
 function P.Build(config)
     if type(config) ~= "table" then return nil, "Bitte die Anzeige ausfüllen." end
     if config.mode ~= "LFM" and config.mode ~= "LFG" then return nil, "Bitte LFM oder LFG wählen." end
